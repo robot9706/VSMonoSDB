@@ -260,6 +260,7 @@
   <ItemGroup>
     <VSCTCompile Include="CommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +273,7 @@
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -283,9 +285,11 @@
     <Content Include="DLLs\Mono.Debugging.dll" />
     <Content Include="DLLs\Mono.Debugging.Soft.dll" />
     <Content Include="DLLs\Mono.Posix.dll" />
-    <Content Include="Resources\SettingsCommand.png" />
-    <Content Include="Resources\TempCommand.png" />
-    <Content Include="Resources\TempCommandPackage.ico" />
+    <Content Include="Resources\PackageIcon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\MenuIcons.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

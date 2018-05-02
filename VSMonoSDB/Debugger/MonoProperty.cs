@@ -22,10 +22,12 @@ namespace VSMonoSDB.Debugging
         public int EnumChildren(uint dwFields, uint dwRadix, ref Guid guidFilter, ulong dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum)
         {
             ppEnum = null;
-            if (!_value.HasChildren)
+
+			ObjectValue[] children = _value.GetAllChildren();
+
+			if (!_value.HasChildren && children.Length > 0)
                 return S_FALSE;
 
-            ObjectValue[] children = _value.GetAllChildren();
             DEBUG_PROPERTY_INFO[] props = new DEBUG_PROPERTY_INFO[children.Length];
 
             for (var i = 0; i < children.Length; i++)
@@ -99,7 +101,18 @@ namespace VSMonoSDB.Debugging
 
             if ((dwFields & (uint)enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE) != 0)
             {
-                info.bstrValue = _value.DisplayValue;
+				if (_value.IsError)
+				{
+					info.bstrValue = "Evaluation error; " + _value.DisplayValue;
+				}
+				else if (_value.IsUnknown)
+				{
+					info.bstrValue = "Unknown value";
+				}
+				else
+				{
+					info.bstrValue = _value.DisplayValue;
+				}
                 info.dwFields |= (uint)enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
             }
 

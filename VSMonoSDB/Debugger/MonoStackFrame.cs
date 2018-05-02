@@ -4,6 +4,7 @@ using static Microsoft.VisualStudio.VSConstants;
 using Mono.Debugging.Client;
 using System.IO;
 using VSMonoSDB.Debugging.Enumerators;
+using System.Linq;
 
 namespace VSMonoSDB.Debugging
 {
@@ -286,11 +287,31 @@ namespace VSMonoSDB.Debugging
             pbstrError = null;
             pichError = 0;
 
-            if (_monoStackFrame.ValidateExpression(pszCode))
-            {
-                ObjectValue evalValue = _monoStackFrame.GetExpressionValue(pszCode, EvaluationOptions.DefaultOptions);
+			StackFrame frame = _monoStackFrame;
 
-                ppExpr = new MonoExpression(_engine, _thread, evalValue, pszCode);
+			if (frame.ValidateExpression(pszCode))
+            {
+				ObjectValue evalValue = null;
+
+				//TODO: Something is wrong with expression resolving, sometimes the result is the expression, not the result (???)
+				if (!pszCode.Contains(" "))
+				{
+					ObjectValue possibleValue = FindPossibleValue(frame, pszCode);
+					if (possibleValue != null)
+					{
+						evalValue = possibleValue;
+					}
+					else
+					{
+						evalValue = frame.GetExpressionValue(pszCode, EvaluationOptions.DefaultOptions);
+					}
+				}
+				else
+				{
+					evalValue = frame.GetExpressionValue(pszCode, EvaluationOptions.DefaultOptions);
+				}
+
+				ppExpr = new MonoExpression(_engine, _thread, evalValue, pszCode);
 
                 return S_OK;
             }
@@ -298,5 +319,17 @@ namespace VSMonoSDB.Debugging
             ppExpr = null;
             return S_FALSE;
         }
+
+		private ObjectValue FindPossibleValue(StackFrame frame, string name)
+		{
+			ObjectValue val = null;
+
+			ObjectValue[] locals = frame.GetAllLocals(EvaluationOptions.DefaultOptions);
+			val = locals.SingleOrDefault(x => x.Name == name);
+			if (val != null)
+				return val;
+
+			return null;
+		}
     }
 }

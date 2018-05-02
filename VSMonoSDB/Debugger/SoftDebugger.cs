@@ -2,6 +2,7 @@
 using Mono.Debugging.Soft;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace VSMonoSDB.Debugging
 {
@@ -128,17 +129,24 @@ namespace VSMonoSDB.Debugging
 
         public void Kill()
         {
-            lock (_lock)
-            {
-                if (_session == null)
-                    return;
+			Task.WaitAny(new Task[] 
+			{
+				Task.Delay(5000),
+				Task.Factory.StartNew(() => 
+				{
+					lock (_lock)
+					{
+						if (_session == null)
+							return;
 
-                if (!_session.HasExited)
-                    _session.Exit();
+						if (!_session.HasExited)
+							_session.Exit();
 
-                _session.Dispose();
-                _session = null;
-            }
+						_session.Dispose();
+						_session = null;
+					}
+				})
+			});
         }
 
         public void Continue()
