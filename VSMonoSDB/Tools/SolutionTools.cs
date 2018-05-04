@@ -26,6 +26,19 @@ namespace VSMonoSDB.Tools
 			_dte = package.FindService<DTE>();
 		}
 
+		public List<Project> GetSelectedProjects()
+		{
+			List<Project> projects = new List<Project>();
+
+			Array projs = (Array)_dte.ActiveSolutionProjects;
+			for (int x = 0; x < projs.Length; x++)
+			{
+				projects.Add((Project)projs.GetValue(x));
+			}
+
+			return projects;
+		}
+
         public Project GetStartupProject()
         {
             //Get the first startup project
@@ -187,10 +200,6 @@ namespace VSMonoSDB.Tools
 
             //Prepare the MDB (just to make sure)
             _package.MonoTools.UpdateMDB(file);
-
-            //Try to install the debugger
-            if (!DebuggerInstaller.InstallDebugger(_package))
-                return;
 
 			//Set the info for the debugger
 			MainPackage.DebugTarget = new DebugInfo()

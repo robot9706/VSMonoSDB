@@ -8,6 +8,9 @@ using VSMonoSDB.Tools;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
 using System.Net;
+using System.Collections.Generic;
+using EnvDTE;
+using System.IO;
 
 namespace VSMonoSDB
 {
@@ -42,7 +45,10 @@ namespace VSMonoSDB
 
 			InitMenu();
 			InitSettings();
-			
+
+			//Try to install the debugger
+			DebuggerInstaller.InstallDebugger(this);
+				
 			base.Initialize();
         }
 
@@ -61,10 +67,12 @@ namespace VSMonoSDB
 
 		#region Menu commands
 		public readonly Guid MenuCommandSet = new Guid("ddfe7fa8-8bad-46b8-b97c-8dbbc000c7fd");
+		public readonly Guid ContextMenuCommandSet = new Guid("8BF5AA4C-E040-4535-BC38-EADA40293DC6");
 
 		public const int DebugLocalhostCommandID = 0x0100;
 		public const int SettingsCommandID = 0x0101;
 		public const int DebugRemoteCommandID = 0x0102;
+		public const int GenerateMDBCommandID = 0x0103;
 
 		private void InitMenu()
 		{
@@ -90,6 +98,13 @@ namespace VSMonoSDB
 			{
 				CommandID menuCommandID = new CommandID(MenuCommandSet, SettingsCommandID);
 				MenuCommand menuItem = new MenuCommand(MenuItem_Settings, menuCommandID);
+				commandService.AddCommand(menuItem);
+			}
+
+			//Genearte MDB menu
+			{
+				CommandID menuCommandID = new CommandID(ContextMenuCommandSet, GenerateMDBCommandID);
+				MenuCommand menuItem = new MenuCommand(MenuItem_GenerateMDB, menuCommandID);
 				commandService.AddCommand(menuItem);
 			}
 		}
@@ -123,6 +138,53 @@ namespace VSMonoSDB
 		private void MenuItem_Settings(object sender, EventArgs e)
 		{
 			ShowSettings();
+		}
+
+		private void MenuItem_GenerateMDB(object sender, EventArgs e)
+		{
+			List<Project> projects = SolutionTools.GetSelectedProjects();
+
+			int genCount = 0;
+			int nonSupport = 0;
+
+			foreach (Project p in projects)
+			{
+				if (p.CodeModel == null || p.CodeModel.Language != CodeModelLanguageConstants.vsCMLanguageCSharp) //Is the project C#?
+				{
+					nonSupport++;
+
+					continue;
+				}
+
+				string file = SolutionTools.GetOutputFile(p);
+				if (!File.Exists(file)) //Make sure the project is built
+				{
+					InfoMessage("The output file is not found for project \"" + p.Name + "\" at \"" + file + "\"!", "Generate MDB");
+					return;
+				}
+
+				MonoTools.UpdateMDB(file);
+
+				genCount++;
+			}
+
+			string noSupportMessage = (nonSupport > 0 ? " (Not supported projects: " + nonSupport.ToString() + ")" : string.Empty);
+
+			if (genCount > 0)
+			{
+				if (genCount == 1 && projects.Count == 1)
+				{
+					InfoMessage("MDB had been generated for \"" + projects[0].Name + "\"" + noSupportMessage, "Generate MDB");
+				}
+				else
+				{
+					InfoMessage(genCount.ToString() + " MDB(s) had been generated. + noSupportMessage", "Generate MDB");
+				}
+			}
+			else
+			{
+				InfoMessage("No MDB had been generated." + noSupportMessage, "Generate MDB");
+			}
 		}
 		#endregion
 

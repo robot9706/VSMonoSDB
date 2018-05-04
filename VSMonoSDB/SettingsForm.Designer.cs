@@ -35,6 +35,8 @@
 			this.btnMonoBrowse = new System.Windows.Forms.Button();
 			this.buttonsPanel = new System.Windows.Forms.Panel();
 			this.btnOk = new System.Windows.Forms.Button();
+			this.btnDEInstall = new System.Windows.Forms.Button();
+			this.label3 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.numDebugPort)).BeginInit();
 			this.buttonsPanel.SuspendLayout();
 			this.SuspendLayout();
@@ -107,7 +109,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.buttonsPanel.BackColor = System.Drawing.SystemColors.Control;
 			this.buttonsPanel.Controls.Add(this.btnOk);
-			this.buttonsPanel.Location = new System.Drawing.Point(0, 87);
+			this.buttonsPanel.Location = new System.Drawing.Point(0, 119);
 			this.buttonsPanel.Name = "buttonsPanel";
 			this.buttonsPanel.Size = new System.Drawing.Size(414, 45);
 			this.buttonsPanel.TabIndex = 5;
@@ -123,11 +125,32 @@
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
 			// 
+			// btnDEInstall
+			// 
+			this.btnDEInstall.Location = new System.Drawing.Point(95, 81);
+			this.btnDEInstall.Name = "btnDEInstall";
+			this.btnDEInstall.Size = new System.Drawing.Size(143, 27);
+			this.btnDEInstall.TabIndex = 1;
+			this.btnDEInstall.Text = "Reinstall debugger";
+			this.btnDEInstall.UseVisualStyleBackColor = true;
+			this.btnDEInstall.Click += new System.EventHandler(this.btnDEInstall_Click);
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(44, 86);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(46, 16);
+			this.label3.TabIndex = 6;
+			this.label3.Text = "Tools:";
+			// 
 			// SettingsForm
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.Color.White;
-			this.ClientSize = new System.Drawing.Size(409, 129);
+			this.ClientSize = new System.Drawing.Size(409, 161);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.btnDEInstall);
 			this.Controls.Add(this.buttonsPanel);
 			this.Controls.Add(this.btnMonoBrowse);
 			this.Controls.Add(this.tbMonoPath);
@@ -136,7 +159,7 @@
 			this.Controls.Add(this.label1);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "SettingsForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Debugger settings";
@@ -157,5 +180,7 @@
 		private System.Windows.Forms.Button btnMonoBrowse;
 		private System.Windows.Forms.Panel buttonsPanel;
 		private System.Windows.Forms.Button btnOk;
+		private System.Windows.Forms.Button btnDEInstall;
+		private System.Windows.Forms.Label label3;
 	}
 }

@@ -1,18 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<Extern href="stdidcmd.h" />
+	<Extern href="stdidcmd.h" />MenuGroup
 	<Extern href="vsshlids.h" />
 
 	<Commands package="guidCommandPackage">
 		<Groups>
-		  <Group guid="guidCmdSet" id="MyMenuGroup" priority="0x0600">
-			<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
-		  </Group>
+			<Group guid="guidCmdSet" id="MenuGroup" priority="0x0600">
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
+			</Group>
+			<Group guid="guidContextCmdSet" id="ContextMenuGroup" priority="0x0600">
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE" />
+			</Group>
 		</Groups>
 
 		<Buttons>
 			<Button guid="guidCmdSet" id="DebugLocalID" priority="0x0100" type="Button">
-				<Parent guid="guidCmdSet" id="MyMenuGroup" />
+				<Parent guid="guidCmdSet" id="MenuGroup" />
 				<Icon guid="guidImages" id="bmpDebugLocal" />
 				<Strings>
 					<ButtonText>Debug localhost</ButtonText>
@@ -20,7 +23,7 @@
 			</Button>
 
 			<Button guid="guidCmdSet" id="DebugRemoteID" priority="0x0101" type="Button">
-				<Parent guid="guidCmdSet" id="MyMenuGroup" />
+				<Parent guid="guidCmdSet" id="MenuGroup" />
 				<Icon guid="guidImages" id="bmpDebugRemote" />
 				<Strings>
 					<ButtonText>Debug remote</ButtonText>
@@ -28,10 +31,18 @@
 			</Button>
 			
 			<Button guid="guidCmdSet" id="SettingsID" priority="0x0102" type="Button">
-				<Parent guid="guidCmdSet" id="MyMenuGroup" />
+				<Parent guid="guidCmdSet" id="MenuGroup" />
 				<Icon guid="guidImages" id="bmpSettings" />
 				<Strings>
 					<ButtonText>Mono SDB settings</ButtonText>
+				</Strings>
+			</Button>
+
+			<Button guid="guidContextCmdSet" id="GenerateMDBID" priority="0x0103" type="Button">
+				<Parent guid="guidContextCmdSet" id="ContextMenuGroup" />
+				<Icon guid="guidImages" id="bmpSettings" />
+				<Strings>
+					<ButtonText>Generate MDB</ButtonText>
 				</Strings>
 			</Button>
 		</Buttons>
@@ -45,10 +56,15 @@
 		<GuidSymbol name="guidCommandPackage" value="{67654b5e-5daa-480f-947c-39d43820a23f}" />
 
 		<GuidSymbol name="guidCmdSet" value="{ddfe7fa8-8bad-46b8-b97c-8dbbc000c7fd}">
-			<IDSymbol name="MyMenuGroup" value="0x1020" />
+			<IDSymbol name="MenuGroup" value="0x1020" />
 			<IDSymbol name="DebugLocalID" value="0x0100" />
 			<IDSymbol name="SettingsID" value="0x0101" />
 			<IDSymbol name="DebugRemoteID" value="0x0102" />
+		</GuidSymbol>
+
+		<GuidSymbol name="guidContextCmdSet" value="{8BF5AA4C-E040-4535-BC38-EADA40293DC6}">
+			<IDSymbol name="ContextMenuGroup" value="0x1021" />
+			<IDSymbol name="GenerateMDBID" value="0x0103" />
 		</GuidSymbol>
 
 		<GuidSymbol name="guidImages" value="{b280bcc8-6163-4e59-a217-fac39cbaa653}">

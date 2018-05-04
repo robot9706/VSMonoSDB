@@ -13,13 +13,11 @@ namespace VSMonoSDB.Tools
         private const string ENGINE_PATH = @"AD7Metrics\Engine\";
         private const string CLSID_PATH = @"CLSID\";
 
-        public static bool InstallDebugger(IMessageLogger msg)
+        public static bool InstallDebugger(IMessageLogger msg, bool force = false)
         {
             try
             {
-                RegistryKey regKey = Registry.ClassesRoot.OpenSubKey(@"CLSID\{" + DebuggerGuids.EngineIdGuid + "}");
-
-                if (regKey != null) //Check if the debugger is already installed
+                if (CheckInstalled() && !force) //Check if the debugger is already installed
                     return true;
 
                 string location = typeof(MonoEngine).Assembly.Location;
@@ -62,6 +60,19 @@ namespace VSMonoSDB.Tools
 
             return false;
         }
+
+		private static bool CheckInstalled()
+		{
+			using (RegistryKey config = VSRegistry.RegistryRoot(__VsLocalRegistryType.RegType_Configuration))
+			{
+				using (RegistryKey engine = config.OpenSubKey(ENGINE_PATH))
+				{
+					string engineGuid = DebuggerGuids.EngineIdGuid.ToString("B").ToUpper();
+
+					return (engine.OpenSubKey(engineGuid) == null);
+				}
+			}
+		}
 
         private static void RegisterDebugEngine(string dllPath, RegistryKey rootKey)
         {
