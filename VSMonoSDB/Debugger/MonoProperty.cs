@@ -101,7 +101,11 @@ namespace VSMonoSDB.Debugging
 
             if ((dwFields & (uint)enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE) != 0)
             {
-				if (_value.IsError)
+				if(_value.HasFlag(ObjectValueFlags.Namespace) && _value.HasFlag(ObjectValueFlags.Object))
+				{
+					info.bstrValue = "Unavailable";
+				}
+				else if (_value.IsError)
 				{
 					info.bstrValue = "Evaluation error; " + _value.DisplayValue;
 				}

@@ -14,7 +14,6 @@ namespace VSMonoSDB.Debugging
         private uint _stepUnit;
 
         private DebuggerSessionOptions _options;
-        private StackFrame _activeFrame;
 
         private MonoEngine _debugEngine;
 
@@ -54,19 +53,13 @@ namespace VSMonoSDB.Debugging
         {
             get
             {
-                var f = _activeFrame;
-
-                if (f != null)
-                    return f;
-
                 var bt = ActiveBacktrace;
 
                 if (bt != null)
-                    return _activeFrame = bt.GetFrame(0);
+                    return bt.GetFrame(0);
 
                 return null;
             }
-            set { _activeFrame = value; }
         }
 
         public ExceptionInfo ActiveException
@@ -101,8 +94,8 @@ namespace VSMonoSDB.Debugging
             _session.TargetUnhandledException += event_TargetUnhandledException;
         }
 
-        #region Debug session
-        public void Connect(IPAddress targetIP, int targetPort)
+		#region Debug session
+		public void Connect(IPAddress targetIP, int targetPort)
         {
             lock (_lock)
             {
@@ -129,25 +122,21 @@ namespace VSMonoSDB.Debugging
 
         public void Kill()
         {
-			Task.WaitAny(new Task[] 
+			lock (_lock)
 			{
-				Task.Delay(5000),
-				Task.Factory.StartNew(() => 
-				{
-					lock (_lock)
-					{
-						if (_session == null)
-							return;
+				if (_session == null)
+					return;
 
-						if (!_session.HasExited)
-							_session.Exit();
+				if (!_session.IsRunning)
+					_session.Continue();
 
-						_session.Dispose();
-						_session = null;
-					}
-				})
-			});
-        }
+				if (!_session.HasExited)
+					_session.Exit();
+
+				_session.Dispose();
+				_session = null;
+			}
+		}
 
         public void Continue()
         {

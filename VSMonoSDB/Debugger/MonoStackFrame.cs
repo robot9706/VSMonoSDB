@@ -146,9 +146,9 @@ namespace VSMonoSDB.Debugging
             if (_monoStackFrame.HasDebugInfo)
             {
                 ppCxt = new MonoDocumentContext(new TextPositionInfo(
-                    _monoStackFrame.SourceLocation.FileName,
-                    _monoStackFrame.SourceLocation.Line - 1,
-                    _monoStackFrame.SourceLocation.Column - 1), null);
+					_monoStackFrame.SourceLocation.FileName,
+					_monoStackFrame.SourceLocation.Line - 1,
+					_monoStackFrame.SourceLocation.Column - 1), null);
 
                 return S_OK;
             }
@@ -282,54 +282,25 @@ namespace VSMonoSDB.Debugging
             return S_OK;
         }
 
-        public int ParseText(string pszCode, uint dwFlags, uint nRadix, out IDebugExpression2 ppExpr, out string pbstrError, out uint pichError)
-        {
-            pbstrError = null;
-            pichError = 0;
+		public int ParseText(string pszCode, uint dwFlags, uint nRadix, out IDebugExpression2 ppExpr, out string pbstrError, out uint pichError)
+		{
+			pbstrError = null;
+			pichError = 0;
 
 			StackFrame frame = _monoStackFrame;
 
 			if (frame.ValidateExpression(pszCode))
-            {
-				ObjectValue evalValue = null;
-
-				//TODO: Something is wrong with expression resolving, sometimes the result is the expression, not the result (???)
-				if (!pszCode.Contains(" "))
-				{
-					ObjectValue possibleValue = FindPossibleValue(frame, pszCode);
-					if (possibleValue != null)
-					{
-						evalValue = possibleValue;
-					}
-					else
-					{
-						evalValue = frame.GetExpressionValue(pszCode, EvaluationOptions.DefaultOptions);
-					}
-				}
-				else
-				{
-					evalValue = frame.GetExpressionValue(pszCode, EvaluationOptions.DefaultOptions);
-				}
+			{
+				ObjectValue evalValue = frame.GetExpressionValue(pszCode, EvaluationOptions.DefaultOptions);
+				evalValue.WaitHandle.WaitOne();
 
 				ppExpr = new MonoExpression(_engine, _thread, evalValue, pszCode);
 
-                return S_OK;
-            }
+				return S_OK;
+			}
 
-            ppExpr = null;
-            return S_FALSE;
-        }
-
-		private ObjectValue FindPossibleValue(StackFrame frame, string name)
-		{
-			ObjectValue val = null;
-
-			ObjectValue[] locals = frame.GetAllLocals(EvaluationOptions.DefaultOptions);
-			val = locals.SingleOrDefault(x => x.Name == name);
-			if (val != null)
-				return val;
-
-			return null;
+			ppExpr = null;
+			return S_FALSE;
 		}
     }
 }

@@ -34,9 +34,14 @@ namespace VSMonoSDB.Debugging
             _requestInfo = inf[0];
         }
 
-        public int Bind()
+        /// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public int Bind()
         {
             _position = new TextPositionInfo(_requestInfo);
+			_position.FixPosition();
 
             _monoBreakpoint = _engine.BreakpointManager.CreateBreakpoint(_position, this);
             SetCondition(_requestInfo.bpCondition);

@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.Debugger.Interop;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace VSMonoSDB.Debugging
@@ -71,5 +73,26 @@ namespace VSMonoSDB.Debugging
             EndLine = (int)tend[0].dwLine;
             EndColumn = (int)tend[0].dwColumn;
         }
+
+		public void FixPosition()
+		{
+			if (!File.Exists(FilePath))
+				return;
+
+			string line = File.ReadLines(FilePath).Skip(StartLine).Take(1).First();
+
+			line = line.Trim();
+
+			if (line.EndsWith("{"))
+			{
+				StartLine++;
+				EndLine++;
+			}
+			else if (line.EndsWith("}"))
+			{
+				StartLine--;
+				EndLine--;
+			}
+		}
     }
 }
