@@ -29,7 +29,18 @@ Note: The MDB file will be automatically built before the debugger attaches.
 	mono_debug_init(MONO_DEBUG_FORMAT_MONO);
    ```
    
-   Before loading an assembly load the MDB:
+   Before loading an assembly load the MDB using the following method:
    ```
    mono_debug_open_image_from_memory(MonoImage* targetImage, mono_byte* MDBData, int MDBDataLength);
+   ```
+   
+   For example:
+   ```
+   MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+   MonoImage* imagePtr = mono_image_open_from_data_with_name(...);
+   
+   mono_debug_open_image_from_memory(...);
+   
+   status = MONO_IMAGE_ERROR_ERRNO;
+   MonoAssembly* assemblyPtr = mono_assembly_load_from_full(...);
    ```
