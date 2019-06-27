@@ -47,6 +47,7 @@ namespace VSMonoSDB.Tools
             ProcessStartInfo info = new ProcessStartInfo(ToolPDB2MDB, assembly);
 
             info.CreateNoWindow = true;
+			info.UseShellExecute = true;
 
             Process proc = Process.Start(info);
             proc.WaitForExit();

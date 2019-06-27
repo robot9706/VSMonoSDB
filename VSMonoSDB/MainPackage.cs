@@ -47,7 +47,7 @@ namespace VSMonoSDB
 			InitSettings();
 
 			//Try to install the debugger
-			DebuggerInstaller.InstallDebugger(this);
+			DebuggerInstaller.InstallDebugger(this, true);
 				
 			base.Initialize();
         }

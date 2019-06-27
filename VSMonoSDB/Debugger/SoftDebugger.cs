@@ -246,10 +246,37 @@ namespace VSMonoSDB.Debugging
 
             _debugEngine.Callback.OnStepFinished(_debugEngine.ThreadManager[e.Thread]);
         }
-        #endregion
+		#endregion
 
-        #region Event handlers
-        private void event_TargetUnhandledException(object sender, TargetEventArgs e)
+		#region Event handlers
+		private List<string> _alreadyResolving = new List<string>();
+
+		private string event_TypeResolverHandler(string identifier, SourceLocation location)
+		{
+			if (_alreadyResolving.Contains(identifier))
+				return null;
+
+			if (identifier == "__EXCEPTION_OBJECT__")
+				return null;
+
+			foreach (var loc in ActiveFrame.GetAllLocals())
+				if (loc.Name == identifier)
+					return null;
+
+			//TODO: HACK
+			_alreadyResolving.Add(identifier);
+			ObjectValue resolvedValue = ActiveFrame.GetExpressionValue(identifier, EvaluationOptions.DefaultOptions);
+			_alreadyResolving.Remove(identifier);
+
+			if (resolvedValue != null && !resolvedValue.IsUnknown && !resolvedValue.IsError && !(resolvedValue.HasFlag(ObjectValueFlags.Namespace) && resolvedValue.HasFlag(ObjectValueFlags.Object)))
+			{
+				return null;
+			}
+
+			return identifier;
+		}
+
+		private void event_TargetUnhandledException(object sender, TargetEventArgs e)
         {
             ExceptionInfo exception = e.Backtrace.GetFrame(0).GetException();
 
@@ -259,20 +286,6 @@ namespace VSMonoSDB.Debugging
         private void event_TargetReady(object sender, TargetEventArgs e)
         {
             _debugEngine.ThreadManager.AddThread(e.Thread);
-        }
-
-        private string event_TypeResolverHandler(string identifier, SourceLocation location)
-        {
-            //From the original CLI SDB
-
-            if (identifier == "__EXCEPTION_OBJECT__")
-                return null;
-
-            foreach (var loc in ActiveFrame.GetAllLocals())
-                if (loc.Name == identifier)
-                    return null;
-
-            return identifier;
         }
 
         private void event_TargetThreadStarted(object sender, TargetEventArgs e)
