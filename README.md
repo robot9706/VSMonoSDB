@@ -16,7 +16,7 @@ Open "Tools" then select:
 Note: The MDB file will be automatically built before the debugger attaches.
 
 ## Mono commandline and embedded mono
-* Command line usage: ```mono --soft-breakpoints --debugger-agent=transport=dt_socket,address=127.0.01:9000,server=y [other arguments]```
+* Command line usage: ```mono --soft-breakpoints --debugger-agent=transport=dt_socket,address=127.0.0.1:9000,server=y [other arguments]```
 * Embedded mono: 
  
    Enabling debug mode:
